@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
         {
             for (int j = 0; j < Size; j++)
             {
-                Matrix[i, j] = 0; // 0: desocupat, 1: fitxa jugador 1, -1: fitxa IA;
+                Matrix[i, j] = 0;
             }
         }
     }
@@ -49,9 +49,9 @@ public class GameManager : MonoBehaviour
     private IEnumerator WaitingABit()
     {
         yield return new WaitForSeconds(1f);
-        MinMaxAI(); // antes era RandomAI()
+        RandomAI();
     }
-    public void MinMaxAI()
+    public void RandomAI()
     {
         var (x, y) = MinMax.GetBestMove(Matrix);
         DoMove(x, y, -1);

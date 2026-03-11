@@ -30,7 +30,6 @@ public class Node
         Y = y;
         BuildAuxMatrix(this);
         Pruned = false;
-        //DebugMatrix(MatrixNode);
     }
     public void BuildAuxMatrix(Node node)
     {
@@ -38,7 +37,6 @@ public class Node
         {
             if (node.Parent.X >= 0 && node.Parent.Y >= 0)
             {
-                // ✅ Usa Team directamente, no -Team
                 MatrixNode[node.Parent.X, node.Parent.Y] = node.Parent.Team;
             }
             BuildAuxMatrix(node.Parent);

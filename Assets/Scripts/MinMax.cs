@@ -2,7 +2,6 @@
 
 public static class MinMax
 {
-    // ── Punto de entrada ─────────────────────────────────────────────
     public static (int x, int y) GetBestMove(int[,] matrix)
     {
         Node root = new Node(
@@ -15,7 +14,7 @@ public static class MinMax
             matrixNode: CopyMatrix(matrix)
         );
 
-        MinMaxAlgorithm(root, false); // false = turno IA primero
+        MinMaxAlgorithm(root, false);
 
         if (root.BestChild == null)
         {
@@ -27,7 +26,6 @@ public static class MinMax
         return (root.BestChild.X, root.BestChild.Y);
     }
 
-    // ── Algoritmo MinMax con Alpha-Beta usando Node ───────────────────
     private static int MinMaxAlgorithm(Node node, bool isMaximizing)
     {
         int result = Calculs.EvaluateWin(node.MatrixNode);
@@ -39,7 +37,7 @@ public static class MinMax
         int alpha = node.Alpha;
         int beta = node.Beta;
 
-        if (isMaximizing) // Turno jugador humano (1) — maximiza
+        if (isMaximizing)
         {
             int best = int.MinValue;
 
@@ -82,7 +80,7 @@ public static class MinMax
             }
             return best;
         }
-        else // Turno IA (-1) — minimiza
+        else
         {
             int best = int.MaxValue;
 
@@ -126,8 +124,6 @@ public static class MinMax
             return best;
         }
     }
-
-    // ── Copia la matriz ───────────────────────────────────────────────
     private static int[,] CopyMatrix(int[,] original)
     {
         int rows = original.GetLength(0);

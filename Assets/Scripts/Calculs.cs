@@ -66,7 +66,6 @@ public static class Calculs
                         return true;
                     }
                 }
-                //Debug.Log(CalculatePoint(i, j));
             }
         }
         return false;
