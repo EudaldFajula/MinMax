@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,30 +22,33 @@ public static class Calculs
         int counterY = 0;
         int counterD1 = 0;
         int counterD2 = 0;
-        for(int i=0; i<matrix.GetLength(0); i++)
+
+        for (int i = 0; i < matrix.GetLength(0); i++)
         {
-            for (int j = 0; j < matrix.GetLength(1);j++)
+            counterX = 0;
+            counterY = 0;
+
+            for (int j = 0; j < matrix.GetLength(1); j++)
             {
                 counterY += matrix[i, j];
                 counterX += matrix[j, i];
             }
+
             if (counterY == 3 || counterX == 3) return 1;
-            else if (counterY == -3 || counterX ==-3) return -1;
-            counterX = 0;
-            counterY = 0;
+            if (counterY == -3 || counterX == -3) return -1;
+
             counterD1 += matrix[i, i];
-            counterD2 += matrix[2-i, i];
+            counterD2 += matrix[2 - i, i];
         }
+
         if (counterD1 == 3 || counterD2 == 3) return 1;
-        else if(counterD1 == -3 || counterD2 == 3)  return -1;
-        for(int i=0; i<matrix.GetLength(0);i++)
-        {
-            for(int j = 0; j < matrix.GetLength(1);j++)
-            {
+        if (counterD1 == -3 || counterD2 == -3) return -1; // ✅ fix aquí
+
+        for (int i = 0; i < matrix.GetLength(0); i++)
+            for (int j = 0; j < matrix.GetLength(1); j++)
                 if (matrix[i, j] == 0) return 2;
-            }
-        }
-        return 0; // 0 empat, 1 guanya 1, -1 guanya 2, 2 no s'ha acabat
+
+        return 0;
     }
     public static bool CheckIfValidClick(Vector2 mousePosition, int[,] matrix)
     {

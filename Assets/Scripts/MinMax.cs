@@ -5,86 +5,121 @@ public static class MinMax
     // ── Punto de entrada ─────────────────────────────────────────────
     public static (int x, int y) GetBestMove(int[,] matrix)
     {
-        int bestScore = int.MaxValue; // IA minimiza (es equipo -1)
-        int bestX = -1, bestY = -1;
+        Node root = new Node(
+            parent: null,
+            team: 1,
+            alpha: int.MinValue,
+            beta: int.MaxValue,
+            x: -1,
+            y: -1,
+            matrixNode: CopyMatrix(matrix)
+        );
 
-        for (int i = 0; i < matrix.GetLength(0); i++)
+        MinMaxAlgorithm(root, false); // false = turno IA primero
+
+        if (root.BestChild == null)
         {
-            for (int j = 0; j < matrix.GetLength(1); j++)
-            {
-                if (matrix[i, j] == 0)
-                {
-                    int[,] newMatrix = CopyMatrix(matrix);
-                    newMatrix[i, j] = -1; // IA juega
-
-                    int score = MinMaxAlgorithm(newMatrix, int.MinValue, int.MaxValue, false);
-
-                    if (score < bestScore) // IA busca el score más bajo
-                    {
-                        bestScore = score;
-                        bestX = i;
-                        bestY = j;
-                    }
-                }
-            }
+            Debug.LogError("MinMax no encontró jugada!");
+            return (-1, -1);
         }
 
-        Debug.Log($"IA juega en ({bestX},{bestY}) con score {bestScore}");
-        return (bestX, bestY);
+        Debug.Log($"IA juega en ({root.BestChild.X},{root.BestChild.Y}) score={root.BestChild.Value}");
+        return (root.BestChild.X, root.BestChild.Y);
     }
 
-    // ── Algoritmo MinMax con Alpha-Beta ───────────────────────────────
-    // isMaximizing = true  → turno del jugador humano (1)
-    // isMaximizing = false → turno de la IA (-1)
-    private static int MinMaxAlgorithm(int[,] matrix, int alpha, int beta, bool isMaximizing)
+    // ── Algoritmo MinMax con Alpha-Beta usando Node ───────────────────
+    private static int MinMaxAlgorithm(Node node, bool isMaximizing)
     {
-        int result = Calculs.EvaluateWin(matrix);
+        int result = Calculs.EvaluateWin(node.MatrixNode);
 
-        if (result == 1) return 10;   // Gana jugador humano
-        if (result == -1) return -10;  // Gana IA
-        if (result == 0) return 0;    // Empate
+        if (result == 1) return 10;
+        if (result == -1) return -10;
+        if (result == 0) return 0;
 
-        if (isMaximizing) // Turno del jugador humano
+        int alpha = node.Alpha;
+        int beta = node.Beta;
+
+        if (isMaximizing) // Turno jugador humano (1) — maximiza
         {
             int best = int.MinValue;
 
-            for (int i = 0; i < matrix.GetLength(0); i++)
+            for (int i = 0; i < node.MatrixNode.GetLength(0); i++)
             {
-                for (int j = 0; j < matrix.GetLength(1); j++)
+                for (int j = 0; j < node.MatrixNode.GetLength(1); j++)
                 {
-                    if (matrix[i, j] == 0)
+                    if (node.MatrixNode[i, j] == 0)
                     {
-                        int[,] newMatrix = CopyMatrix(matrix);
-                        newMatrix[i, j] = 1; // Jugador humano
+                        Node child = new Node(
+                            parent: node,
+                            team: 1,
+                            alpha: alpha,
+                            beta: beta,
+                            x: i,
+                            y: j,
+                            matrixNode: CopyMatrix(node.MatrixNode)
+                        );
+                        node.NodeChildren.Push(child);
 
-                        int score = MinMaxAlgorithm(newMatrix, alpha, beta, false);
-                        best = Mathf.Max(best, score);
+                        int score = MinMaxAlgorithm(child, false);
+                        child.Value = score;
+
+                        if (score > best)
+                        {
+                            best = score;
+                            node.BestChild = child;
+                        }
+
                         alpha = Mathf.Max(alpha, best);
+                        node.Alpha = alpha;
 
-                        if (beta <= alpha) return best; // Poda
+                        if (beta <= alpha)
+                        {
+                            child.Pruned = true;
+                            return best;
+                        }
                     }
                 }
             }
             return best;
         }
-        else // Turno de la IA
+        else // Turno IA (-1) — minimiza
         {
             int best = int.MaxValue;
 
-            for (int i = 0; i < matrix.GetLength(0); i++)
+            for (int i = 0; i < node.MatrixNode.GetLength(0); i++)
             {
-                for (int j = 0; j < matrix.GetLength(1); j++)
+                for (int j = 0; j < node.MatrixNode.GetLength(1); j++)
                 {
-                    if (matrix[i, j] == 0)
+                    if (node.MatrixNode[i, j] == 0)
                     {
-                        int[,] newMatrix = CopyMatrix(matrix);
-                        newMatrix[i, j] = -1; // IA
+                        Node child = new Node(
+                            parent: node,
+                            team: -1,
+                            alpha: alpha,
+                            beta: beta,
+                            x: i,
+                            y: j,
+                            matrixNode: CopyMatrix(node.MatrixNode)
+                        );
+                        node.NodeChildren.Push(child);
 
-                        int score = MinMaxAlgorithm(newMatrix, alpha, beta, true);
-                        best = Mathf.Min(best, score);
+                        int score = MinMaxAlgorithm(child, true);
+                        child.Value = score;
+
+                        if (score < best)
+                        {
+                            best = score;
+                            node.BestChild = child;
+                        }
+
                         beta = Mathf.Min(beta, best);
+                        node.Beta = beta;
 
-                        if (beta <= alpha) return best; // Poda
+                        if (beta <= alpha)
+                        {
+                            child.Pruned = true;
+                            return best;
+                        }
                     }
                 }
             }

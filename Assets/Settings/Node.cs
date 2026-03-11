@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
@@ -12,12 +12,12 @@ public class Node
     public int Beta { get; set; }
     public int Value { get; set; }
     public Stack<Node> NodeChildren { get; set; }
-    public int[,] MatrixNode {  get; set; } 
+    public int[,] MatrixNode { get; set; }
     public Node BestChild { get; set; }
     public int X { get; set; }
     public int Y { get; set; }
     public bool Pruned { get; set; }
-    public Node(Node parent, int team, int alpha, int beta, int x, int y, int[,]matrixNode)
+    public Node(Node parent, int team, int alpha, int beta, int x, int y, int[,] matrixNode)
     {
         Team = team;
         Parent = parent;
@@ -38,7 +38,8 @@ public class Node
         {
             if (node.Parent.X >= 0 && node.Parent.Y >= 0)
             {
-                MatrixNode[node.Parent.X, node.Parent.Y] = -node.Parent.Team;
+                // ✅ Usa Team directamente, no -Team
+                MatrixNode[node.Parent.X, node.Parent.Y] = node.Parent.Team;
             }
             BuildAuxMatrix(node.Parent);
         }
