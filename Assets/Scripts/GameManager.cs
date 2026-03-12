@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public enum States
@@ -55,7 +55,6 @@ public class GameManager : MonoBehaviour
     {
         var (x, y) = MinMax.GetBestMove(Matrix);
         DoMove(x, y, -1);
-        state = States.CanMove;
     }
     public void DoMove(int x, int y, int team)
     {
@@ -64,21 +63,24 @@ public class GameManager : MonoBehaviour
             Instantiate(token1, Calculs.CalculatePoint(x, y), Quaternion.identity);
         else
             Instantiate(token2, Calculs.CalculatePoint(x, y), Quaternion.identity);
+
         int result = Calculs.EvaluateWin(Matrix);
         switch (result)
         {
             case 0:
                 Debug.Log("Draw");
+                state = States.CantMove;
                 break;
             case 1:
                 Debug.Log("You Win");
+                state = States.CantMove;
                 break;
             case -1:
                 Debug.Log("You Lose");
+                state = States.CantMove;
                 break;
             case 2:
-                if(state == States.CantMove)
-                    state = States.CanMove;
+                state = States.CanMove;
                 break;
         }
     }
